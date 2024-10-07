@@ -138,7 +138,7 @@ To consume messages from topic `R2`:
 docker exec -it broker kafka-console-consumer --bootstrap-server broker:9092 --topic R2 --from-beginning
 ```
 
-![Consumer](img/consumer.png)
+![Consumer](img/consomer.png)
 
 ### Producer and Consumer
 

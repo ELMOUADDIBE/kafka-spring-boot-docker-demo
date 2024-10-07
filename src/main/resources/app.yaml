@@ -1,0 +1,54 @@
+# Configuration du serveur
+server:
+  port: 8090
+
+# Configuration de Spring Cloud Stream et Kafka Streams
+spring:
+  cloud:
+    stream:
+      function:
+        # Définition des fonctions utilisées dans l'application
+        definition: pageEventConsumer;pageEventSupplier;pageStreamConsumer;kStreamFunction2
+      bindings:
+        # Liaison pour la fonction pageEventConsumer : consomme des messages du sujet R2 dans le groupe G1
+        pageEventConsumer-in-0:
+          destination: R2
+          group: G1
+        # Liaison pour la fonction pageEventSupplier : produit des messages vers le sujet R3
+        pageEventSupplier-out-0:
+          destination: R3
+        # Liaison pour la fonction kStreamFunction2 : consomme du sujet R3 et produit vers le sujet R6
+        kStreamFunction2-in-0:
+          destination: R3
+          group: G4
+        kStreamFunction2-out-0:
+          destination: R6
+
+  kafka:
+    streams:
+      # ID unique de l'application Kafka Streams
+      application-id: app2
+
+    consumer:
+      # Autoriser la validation automatique des offsets
+      enable-auto-commit: true
+      # Si aucun offset n'existe pour le groupe, commencer à lire les messages depuis le début
+      auto-offset-reset: earliest
+
+# Configuration de Kafka Streams pour la sérialisation et la validation des messages
+spring.kafka.streams:
+  application-id: app2  # ID unique de l'application Kafka Streams
+  binder:
+    configuration:
+      commit.interval.ms: 5000  # Intervalle de validation des offsets toutes les 5 secondes
+      default.key.serde: org.apache.kafka.common.serialization.Serdes$StringSerde  # Sérialisation des clés en String
+      default.value.serde: org.apache.kafka.common.serialization.Serdes$DoubleSerde  # Sérialisation des valeurs en Double
+
+# Configuration des producteurs et consommateurs Kafka
+spring.kafka:
+  producer:
+    key-serializer: org.apache.kafka.common.serialization.StringSerializer  # Sérialiseur des clés pour le producteur Kafka
+    # value-serializer: ma.enset.demospringkafka.serializers.CustomSerializer
+
+  consumer:
+  # value-deserializer: ma.enset.serializers.CustomDeSerializer
